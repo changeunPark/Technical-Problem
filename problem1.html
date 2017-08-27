@@ -1,0 +1,130 @@
+ <!--
+ TODO
+ 재귀함수를 꼭 이용하지않고 않고 리팩토링하는 방법 찾아보기
+ 클로저로 리펙토링하기
+ 수정 필요함 태그들을 어떻게 추가하고 하위 요소로 붙일 것인지 수정이 필요하다.
+ 버큰 클릭하였을 때 스타일 초기화
+-->
+<!DOCTYPE html>
+<html lang="ko">
+<html>
+<head>
+<title>LetterflyFirstProblem</title>
+<meta charset="utf-8">
+<script>
+  var checked = false; // 버튼을 클릭 여부를 확인하기 위해 필요한 변수
+// 문자에 색을 입히는 함수
+  var makeTextColor = function(){
+    var content = document.getElementById("changeColorArea"); // 문자의 색을 변경할 영역의 내용을 가져온다.
+// 버튼을 클릭하였는지 안하였는지 확인
+    if(checked){ //버튼을 이미 클릭함
+      alert("클씨를 이미 변경하였습니다.");
+    } else { //버튼을 처음 클릭함
+      var nodeList = content.childNodes; // 가져온 정보가 tag를 가지고 있는지 여부를 확인하기 위한 변수
+      var changedText=''; // 글자의 색을 변경한 후 반환을 위한 변수
+      for(var i=0;i<nodeList.length;i++){
+// 가져온 정보가 텍스트일 때
+        if(nodeList[i].nodeName === "#text"){
+          var text = nodeList[i].textContent;
+          for(var j=0;j<text.length;j++){
+            var element = document.createElement("span"); // span 요소를 생성
+            var textNode= document.createTextNode(text[j]); // 텍스트 노드를 생성
+            element.appendChild(textNode); // 생성한 요소의 하위요소로 텍스트 노드를 추가
+            element.style.color= makeRandomColor(); //생성한 요소에 색을 입힌다
+            changedText += element.outerHTML; // 변경된 값을 결과값에 임시저장한다
+          }
+        }
+// 가져온 정보가 태그를 가지고 있을 때
+        else {
+          var hasChildNode = nodeList[i].childNodes[0].lastChild // 자식 노드가 잇는지 여부 확인하기 위한 변수
+          var text = nodeList[i].textContent; // 요소가 가지고 있는 텍스트 노드
+
+// 가져온 정보가 태그를 가지고 잇을 떄
+          if(hasChildNode){
+            for(var j=0;j<text.length;j++){
+// 사용자가 빈칸을 입력하였을 때
+              if(text[j] === ' '){
+                var eleArray = checkChildExist(nodeList[i]).split(','); //하위 태그들을 저장해놓은 변수을 찾아서 배열에 저장한다.
+                for(var i=0;i<eleArray.length-1;i++){ //태그의 수에 맞게 요소를 생성한다.
+                  eval("var element"+i+"="+"document.createElement(eleArray["+i+"])");
+                }
+                var element = document.createElement(nodeList[i].tagName);
+                var textNode= document.createTextNode(text[j]);
+                element.style.color= "black";
+
+// appendChild에 대한 이해가 부족하다 어떤식으로 자식노드를 설정해야하는지 확인해야한다.
+                element.appendChild(element1);
+                element1.appendChild(element2);
+                element2.appendChild(textNode);
+                changedText += element.outerHTML;
+               }
+// 사용자가 빈칸이 아는 값을 입력하였을 떄
+               else {
+                var eleArray = checkChildExist(nodeList[i]).split(','); //하위 태그들을 저장해놓은 변수
+                for(var i=0;i<eleArray.length-1;i++){
+                  eval("var element"+i+"="+"document.createElement(eleArray["+i+"])");
+                }
+                var element = document.createElement(nodeList[i].tagName);
+                var textNode= document.createTextNode(text[j]);
+                element.style.color= makeRandomColor();
+
+// appendChild에 대한 이해가 부족하다 어떤식으로 자식노드를 설정해야하는지 확인해야한다.
+                element.appendChild(element1);
+                element1.appendChild(element2);
+                element2.appendChild(textNode);
+                changedText += element.outerHTML;
+              }
+            }
+          }
+
+  // 가져온 정보가 태그를 가지고 있지 않을 떄
+          else {
+            for(var j=0;j<text.length;j++){
+              var element = document.createElement(nodeList[i].tagName);
+              var textNode= document.createTextNode(text[j]);
+              element.appendChild(textNode);
+              element.style.color= makeRandomColor();
+              changedText += element.outerHTML;
+            }
+          }
+        }
+      }
+  //   색을 변경하고자하는 영역에 값을 반환함
+      document.getElementById("changeColorArea").innerHTML = changedText;
+      checked = true;
+    }
+  }
+
+// 자식노드가 있는지 여부 판단하는 함수
+  function checkChildExist(node){
+    if(node.tagName){
+      var childNode = node.childNodes;
+      return (node.tagName+",")+checkChildExist(childNode[0]);
+    } else {
+      return false;
+    }
+  }
+
+// 0~255에 해당하는 난수를 만드는 함수
+  var getRandomNumber = function(min, max){
+    return Math.floor(Math.random() * (max - min +1)) + min;
+  }
+
+// 랜덤 rgb(r,g,b) 색을 만드는 함수
+  var makeRandomColor = function(){
+        var rColor =  getRandomNumber(0, 255);
+        var gColor =  getRandomNumber(0, 255);
+        var bColor =  getRandomNumber(0, 255);
+        var rgbColor = "rgb(" + rColor + "," + gColor + "," + bColor + ")";
+        return rgbColor;
+  }
+
+</script>
+</head>
+<body>
+  <div id="changeColorArea">안<b>녕</b>하세요 <b><i><u>레 터 플 라 이</u></i></b> 입<i>니</i>다</div>
+  <div>
+    <button type="button" onclick="makeTextColor()">글자 색 변경</button>
+  </div>
+</body>
+</html>
